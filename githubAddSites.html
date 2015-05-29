@@ -1,0 +1,950 @@
+<html lang="en-us">
+
+<head>
+    <meta charset="UTF-8">
+    <title>SE Closed Questions Notifier by shu8</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="githubCSS.css" media="screen">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="extraFuncs.js" type="text/javascript"></script>
+</head>
+
+<body>
+    <section class="page-header">
+        <h1 class="project-name">Stack Exchange Closed Questions Notifier</h1>
+        <h2 class="project-tagline">A web-app to notify you if one of your questions close. Because SE won't.</h2>
+        <a href="https://github.com/shu8/SE-Closed-Questions-Notifier" class="btn">View on GitHub</a>
+        <a href="https://github.com/shu8/SE-Closed-Questions-Notifier/zipball/master" class="btn">Download .zip</a>
+        <a href="https://github.com/shu8/SE-Closed-Questions-Notifier/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+        <span><a href="index.html">back to homepage</a></span>
+
+        <h3>Edit sites to check:</h3>
+        <p>Please only use sites you <i>really</i> care about - you don't want throttle violations!</p>
+        <div id='chosenSites'>
+            <ul></ul>
+        </div>
+        <div id='siteChooser' class="ui-widget">
+            <input id="sites" placeholder="Enter site name">
+        </div>
+
+        <script>
+            var sitesToChooseFrom = [{ //list of sites from the API /sites - saved here to avoid an extra API request
+                "label": "Stack Overflow",
+                "value": "stackoverflow"
+            }, {
+                "label": "Server Fault",
+                "value": "serverfault"
+            }, {
+                "label": "Super User",
+                "value": "superuser"
+            }, {
+                "label": "Meta Stack Exchange",
+                "value": "meta"
+            }, {
+                "label": "Web Applications",
+                "value": "webapps"
+            }, {
+                "label": "Web Applications Meta",
+                "value": "meta.webapps"
+            }, {
+                "label": "Arqade",
+                "value": "gaming"
+            }, {
+                "label": "Arqade Meta",
+                "value": "meta.gaming"
+            }, {
+                "label": "Webmasters",
+                "value": "webmasters"
+            }, {
+                "label": "Webmasters Meta",
+                "value": "meta.webmasters"
+            }, {
+                "label": "Seasoned Advice",
+                "value": "cooking"
+            }, {
+                "label": "Seasoned Advice Meta",
+                "value": "meta.cooking"
+            }, {
+                "label": "Game Development",
+                "value": "gamedev"
+            }, {
+                "label": "Game Development Meta",
+                "value": "meta.gamedev"
+            }, {
+                "label": "Photography",
+                "value": "photo"
+            }, {
+                "label": "Photography Meta",
+                "value": "meta.photo"
+            }, {
+                "label": "Cross Validated",
+                "value": "stats"
+            }, {
+                "label": "Cross Validated Meta",
+                "value": "meta.stats"
+            }, {
+                "label": "Mathematics",
+                "value": "math"
+            }, {
+                "label": "Mathematics Meta",
+                "value": "meta.math"
+            }, {
+                "label": "Home Improvement",
+                "value": "diy"
+            }, {
+                "label": "Home Improvement Meta",
+                "value": "meta.diy"
+            }, {
+                "label": "Meta Super User",
+                "value": "meta.superuser"
+            }, {
+                "label": "Meta Server Fault",
+                "value": "meta.serverfault"
+            }, {
+                "label": "Geographic Information Systems",
+                "value": "gis"
+            }, {
+                "label": "Geographic Information Systems Meta",
+                "value": "meta.gis"
+            }, {
+                "label": "TeX - LaTeX",
+                "value": "tex"
+            }, {
+                "label": "TeX - LaTeX Meta",
+                "value": "meta.tex"
+            }, {
+                "label": "Ask Ubuntu",
+                "value": "askubuntu"
+            }, {
+                "label": "Ask Ubuntu Meta",
+                "value": "meta.askubuntu"
+            }, {
+                "label": "Personal Finance & Money",
+                "value": "money"
+            }, {
+                "label": "Personal Finance & Money Meta",
+                "value": "meta.money"
+            }, {
+                "label": "English Language & Usage",
+                "value": "english"
+            }, {
+                "label": "English Language & Usage Meta",
+                "value": "meta.english"
+            }, {
+                "label": "Stack Apps",
+                "value": "stackapps"
+            }, {
+                "label": "User Experience",
+                "value": "ux"
+            }, {
+                "label": "User Experience Meta",
+                "value": "meta.ux"
+            }, {
+                "label": "Unix & Linux",
+                "value": "unix"
+            }, {
+                "label": "Unix & Linux Meta",
+                "value": "meta.unix"
+            }, {
+                "label": "WordPress Development",
+                "value": "wordpress"
+            }, {
+                "label": "WordPress Development Meta",
+                "value": "meta.wordpress"
+            }, {
+                "label": "Theoretical Computer Science",
+                "value": "cstheory"
+            }, {
+                "label": "Theoretical Computer Science Meta",
+                "value": "meta.cstheory"
+            }, {
+                "label": "Ask Different",
+                "value": "apple"
+            }, {
+                "label": "Ask Different Meta",
+                "value": "meta.apple"
+            }, {
+                "label": "Role-playing Games",
+                "value": "rpg"
+            }, {
+                "label": "Role-playing Games Meta",
+                "value": "meta.rpg"
+            }, {
+                "label": "Bicycles",
+                "value": "bicycles"
+            }, {
+                "label": "Bicycles Meta",
+                "value": "meta.bicycles"
+            }, {
+                "label": "Programmers",
+                "value": "programmers"
+            }, {
+                "label": "Programmers Meta",
+                "value": "meta.programmers"
+            }, {
+                "label": "Electrical Engineering",
+                "value": "electronics"
+            }, {
+                "label": "Electrical Engineering Meta",
+                "value": "meta.electronics"
+            }, {
+                "label": "Android Enthusiasts",
+                "value": "android"
+            }, {
+                "label": "Android Enthusiasts Meta",
+                "value": "meta.android"
+            }, {
+                "label": "Board & Card Games",
+                "value": "boardgames"
+            }, {
+                "label": "Board & Card Games Meta",
+                "value": "meta.boardgames"
+            }, {
+                "label": "Physics",
+                "value": "physics"
+            }, {
+                "label": "Physics Meta",
+                "value": "meta.physics"
+            }, {
+                "label": "Homebrewing",
+                "value": "homebrew"
+            }, {
+                "label": "Homebrewing Meta",
+                "value": "meta.homebrew"
+            }, {
+                "label": "Information Security",
+                "value": "security"
+            }, {
+                "label": "Information Security Meta",
+                "value": "meta.security"
+            }, {
+                "label": "Writers",
+                "value": "writers"
+            }, {
+                "label": "Writers Meta",
+                "value": "meta.writers"
+            }, {
+                "label": "Video Production",
+                "value": "video"
+            }, {
+                "label": "Video Production Meta",
+                "value": "meta.video"
+            }, {
+                "label": "Graphic Design",
+                "value": "graphicdesign"
+            }, {
+                "label": "Graphic Design Meta",
+                "value": "meta.graphicdesign"
+            }, {
+                "label": "Database Administrators",
+                "value": "dba"
+            }, {
+                "label": "Database Administrators Meta",
+                "value": "meta.dba"
+            }, {
+                "label": "Science Fiction & Fantasy",
+                "value": "scifi"
+            }, {
+                "label": "Science Fiction & Fantasy Meta",
+                "value": "meta.scifi"
+            }, {
+                "label": "Code Review",
+                "value": "codereview"
+            }, {
+                "label": "Code Review Meta",
+                "value": "meta.codereview"
+            }, {
+                "label": "Programming Puzzles & Code Golf",
+                "value": "codegolf"
+            }, {
+                "label": "Programming Puzzles & Code Golf Meta",
+                "value": "meta.codegolf"
+            }, {
+                "label": "Quantitative Finance",
+                "value": "quant"
+            }, {
+                "label": "Quantitative Finance Meta",
+                "value": "meta.quant"
+            }, {
+                "label": "Project Management",
+                "value": "pm"
+            }, {
+                "label": "Project Management Meta",
+                "value": "meta.pm"
+            }, {
+                "label": "Skeptics",
+                "value": "skeptics"
+            }, {
+                "label": "Skeptics Meta",
+                "value": "meta.skeptics"
+            }, {
+                "label": "Physical Fitness",
+                "value": "fitness"
+            }, {
+                "label": "Physical Fitness Meta",
+                "value": "meta.fitness"
+            }, {
+                "label": "Drupal Answers",
+                "value": "drupal"
+            }, {
+                "label": "Drupal Answers Meta",
+                "value": "meta.drupal"
+            }, {
+                "label": "Motor Vehicle Maintenance & Repair",
+                "value": "mechanics"
+            }, {
+                "label": "Motor Vehicle Maintenance & Repair Meta",
+                "value": "meta.mechanics"
+            }, {
+                "label": "Parenting",
+                "value": "parenting"
+            }, {
+                "label": "Parenting Meta",
+                "value": "meta.parenting"
+            }, {
+                "label": "SharePoint",
+                "value": "sharepoint"
+            }, {
+                "label": "SharePoint Meta",
+                "value": "meta.sharepoint"
+            }, {
+                "label": "Music: Practice & Theory",
+                "value": "music"
+            }, {
+                "label": "Music: Practice & Theory Meta",
+                "value": "meta.music"
+            }, {
+                "label": "Software Quality Assurance & Testing",
+                "value": "sqa"
+            }, {
+                "label": "Software Quality Assurance & Testing Meta",
+                "value": "meta.sqa"
+            }, {
+                "label": "Mi Yodeya",
+                "value": "judaism"
+            }, {
+                "label": "Mi Yodeya Meta",
+                "value": "meta.judaism"
+            }, {
+                "label": "German Language",
+                "value": "german"
+            }, {
+                "label": "German Language Meta",
+                "value": "meta.german"
+            }, {
+                "label": "Japanese Language",
+                "value": "japanese"
+            }, {
+                "label": "Japanese Language Meta",
+                "value": "meta.japanese"
+            }, {
+                "label": "Philosophy",
+                "value": "philosophy"
+            }, {
+                "label": "Philosophy Meta",
+                "value": "meta.philosophy"
+            }, {
+                "label": "Gardening & Landscaping",
+                "value": "gardening"
+            }, {
+                "label": "Gardening & Landscaping Meta",
+                "value": "meta.gardening"
+            }, {
+                "label": "Travel",
+                "value": "travel"
+            }, {
+                "label": "Travel Meta",
+                "value": "meta.travel"
+            }, {
+                "label": "Personal Productivity",
+                "value": "productivity"
+            }, {
+                "label": "Personal Productivity Meta",
+                "value": "meta.productivity"
+            }, {
+                "label": "Cryptography",
+                "value": "crypto"
+            }, {
+                "label": "Cryptography Meta",
+                "value": "meta.crypto"
+            }, {
+                "label": "Signal Processing",
+                "value": "dsp"
+            }, {
+                "label": "Signal Processing Meta",
+                "value": "meta.dsp"
+            }, {
+                "label": "French Language",
+                "value": "french"
+            }, {
+                "label": "French Language Meta",
+                "value": "meta.french"
+            }, {
+                "label": "Christianity",
+                "value": "christianity"
+            }, {
+                "label": "Christianity Meta",
+                "value": "meta.christianity"
+            }, {
+                "label": "Bitcoin",
+                "value": "bitcoin"
+            }, {
+                "label": "Bitcoin Meta",
+                "value": "meta.bitcoin"
+            }, {
+                "label": "Linguistics",
+                "value": "linguistics"
+            }, {
+                "label": "Linguistics Meta",
+                "value": "meta.linguistics"
+            }, {
+                "label": "Biblical Hermeneutics",
+                "value": "hermeneutics"
+            }, {
+                "label": "Biblical Hermeneutics Meta",
+                "value": "meta.hermeneutics"
+            }, {
+                "label": "History",
+                "value": "history"
+            }, {
+                "label": "History Meta",
+                "value": "meta.history"
+            }, {
+                "label": "LEGO&#174; Answers",
+                "value": "bricks"
+            }, {
+                "label": "LEGO&#174; Answers Meta",
+                "value": "meta.bricks"
+            }, {
+                "label": "Spanish Language",
+                "value": "spanish"
+            }, {
+                "label": "Spanish Language Meta",
+                "value": "meta.spanish"
+            }, {
+                "label": "Computational Science",
+                "value": "scicomp"
+            }, {
+                "label": "Computational Science Meta",
+                "value": "meta.scicomp"
+            }, {
+                "label": "Movies & TV",
+                "value": "movies"
+            }, {
+                "label": "Movies & TV Meta",
+                "value": "meta.movies"
+            }, {
+                "label": "Chinese Language",
+                "value": "chinese"
+            }, {
+                "label": "Chinese Language Meta",
+                "value": "meta.chinese"
+            }, {
+                "label": "Biology",
+                "value": "biology"
+            }, {
+                "label": "Biology Meta",
+                "value": "meta.biology"
+            }, {
+                "label": "Poker",
+                "value": "poker"
+            }, {
+                "label": "Poker Meta",
+                "value": "meta.poker"
+            }, {
+                "label": "Mathematica",
+                "value": "mathematica"
+            }, {
+                "label": "Mathematica Meta",
+                "value": "meta.mathematica"
+            }, {
+                "label": "Cognitive Sciences",
+                "value": "cogsci"
+            }, {
+                "label": "Cognitive Sciences Meta",
+                "value": "meta.cogsci"
+            }, {
+                "label": "The Great Outdoors",
+                "value": "outdoors"
+            }, {
+                "label": "The Great Outdoors Meta",
+                "value": "meta.outdoors"
+            }, {
+                "label": "Martial Arts",
+                "value": "martialarts"
+            }, {
+                "label": "Martial Arts Meta",
+                "value": "meta.martialarts"
+            }, {
+                "label": "Sports",
+                "value": "sports"
+            }, {
+                "label": "Sports Meta",
+                "value": "meta.sports"
+            }, {
+                "label": "Academia",
+                "value": "academia"
+            }, {
+                "label": "Academia Meta",
+                "value": "meta.academia"
+            }, {
+                "label": "Computer Science",
+                "value": "cs"
+            }, {
+                "label": "Computer Science Meta",
+                "value": "meta.cs"
+            }, {
+                "label": "The Workplace",
+                "value": "workplace"
+            }, {
+                "label": "The Workplace Meta",
+                "value": "meta.workplace"
+            }, {
+                "label": "Windows Phone",
+                "value": "windowsphone"
+            }, {
+                "label": "Windows Phone Meta",
+                "value": "meta.windowsphone"
+            }, {
+                "label": "Chemistry",
+                "value": "chemistry"
+            }, {
+                "label": "Chemistry Meta",
+                "value": "meta.chemistry"
+            }, {
+                "label": "Chess",
+                "value": "chess"
+            }, {
+                "label": "Chess Meta",
+                "value": "meta.chess"
+            }, {
+                "label": "Raspberry Pi",
+                "value": "raspberrypi"
+            }, {
+                "label": "Raspberry Pi Meta",
+                "value": "meta.raspberrypi"
+            }, {
+                "label": "Russian Language",
+                "value": "russian"
+            }, {
+                "label": "Russian Language Meta",
+                "value": "meta.russian"
+            }, {
+                "label": "Islam",
+                "value": "islam"
+            }, {
+                "label": "Islam Meta",
+                "value": "meta.islam"
+            }, {
+                "label": "Salesforce",
+                "value": "salesforce"
+            }, {
+                "label": "Salesforce Meta",
+                "value": "meta.salesforce"
+            }, {
+                "label": "Ask Patents",
+                "value": "patents"
+            }, {
+                "label": "Ask Patents Meta",
+                "value": "meta.patents"
+            }, {
+                "label": "Genealogy & Family History",
+                "value": "genealogy"
+            }, {
+                "label": "Genealogy & Family History Meta",
+                "value": "meta.genealogy"
+            }, {
+                "label": "Robotics",
+                "value": "robotics"
+            }, {
+                "label": "Robotics Meta",
+                "value": "meta.robotics"
+            }, {
+                "label": "ExpressionEngine&#174; Answers",
+                "value": "expressionengine"
+            }, {
+                "label": "ExpressionEngine&#174; Answers Meta",
+                "value": "meta.expressionengine"
+            }, {
+                "label": "Politics",
+                "value": "politics"
+            }, {
+                "label": "Politics Meta",
+                "value": "meta.politics"
+            }, {
+                "label": "Anime & Manga",
+                "value": "anime"
+            }, {
+                "label": "Anime & Manga Meta",
+                "value": "meta.anime"
+            }, {
+                "label": "Magento",
+                "value": "magento"
+            }, {
+                "label": "Magento Meta",
+                "value": "meta.magento"
+            }, {
+                "label": "English Language Learners",
+                "value": "ell"
+            }, {
+                "label": "English Language Learners Meta",
+                "value": "meta.ell"
+            }, {
+                "label": "Sustainable Living",
+                "value": "sustainability"
+            }, {
+                "label": "Sustainable Living Meta",
+                "value": "meta.sustainability"
+            }, {
+                "label": "Tridion",
+                "value": "tridion"
+            }, {
+                "label": "Tridion Meta",
+                "value": "meta.tridion"
+            }, {
+                "label": "Reverse Engineering",
+                "value": "reverseengineering"
+            }, {
+                "label": "Reverse Engineering Meta",
+                "value": "meta.reverseengineering"
+            }, {
+                "label": "Network Engineering",
+                "value": "networkengineering"
+            }, {
+                "label": "Network Engineering Meta",
+                "value": "meta.networkengineering"
+            }, {
+                "label": "Open Data",
+                "value": "opendata"
+            }, {
+                "label": "Open Data Meta",
+                "value": "meta.opendata"
+            }, {
+                "label": "Freelancing",
+                "value": "freelancing"
+            }, {
+                "label": "Freelancing Meta",
+                "value": "meta.freelancing"
+            }, {
+                "label": "Blender",
+                "value": "blender"
+            }, {
+                "label": "Blender Meta",
+                "value": "meta.blender"
+            }, {
+                "label": "MathOverflow",
+                "value": "mathoverflow.net"
+            }, {
+                "label": "MathOverflow Meta",
+                "value": "meta.mathoverflow.net"
+            }, {
+                "label": "Space Exploration",
+                "value": "space"
+            }, {
+                "label": "Space Exploration Meta",
+                "value": "meta.space"
+            }, {
+                "label": "Sound Design",
+                "value": "sound"
+            }, {
+                "label": "Sound Design Meta",
+                "value": "meta.sound"
+            }, {
+                "label": "Astronomy",
+                "value": "astronomy"
+            }, {
+                "label": "Astronomy Meta",
+                "value": "meta.astronomy"
+            }, {
+                "label": "Tor",
+                "value": "tor"
+            }, {
+                "label": "Tor Meta",
+                "value": "meta.tor"
+            }, {
+                "label": "Pets",
+                "value": "pets"
+            }, {
+                "label": "Pets Meta",
+                "value": "meta.pets"
+            }, {
+                "label": "Amateur Radio",
+                "value": "ham"
+            }, {
+                "label": "Amateur Radio Meta",
+                "value": "meta.ham"
+            }, {
+                "label": "Italian Language",
+                "value": "italian"
+            }, {
+                "label": "Italian Language Meta",
+                "value": "meta.italian"
+            }, {
+                "label": "Stack Overflow em Portugu&#234;s",
+                "value": "pt.stackoverflow"
+            }, {
+                "label": "Stack Overflow em Portugu&#234;s Meta",
+                "value": "meta.pt.stackoverflow"
+            }, {
+                "label": "Aviation",
+                "value": "aviation"
+            }, {
+                "label": "Aviation Meta",
+                "value": "meta.aviation"
+            }, {
+                "label": "Ebooks",
+                "value": "ebooks"
+            }, {
+                "label": "Ebooks Meta",
+                "value": "meta.ebooks"
+            }, {
+                "label": "Beer",
+                "value": "beer"
+            }, {
+                "label": "Beer Meta",
+                "value": "meta.beer"
+            }, {
+                "label": "Software Recommendations",
+                "value": "softwarerecs"
+            }, {
+                "label": "Software Recommendations Meta",
+                "value": "meta.softwarerecs"
+            }, {
+                "label": "Arduino",
+                "value": "arduino"
+            }, {
+                "label": "Arduino Meta",
+                "value": "meta.arduino"
+            }, {
+                "label": "CS50",
+                "value": "cs50"
+            }, {
+                "label": "CS50 Meta",
+                "value": "meta.cs50"
+            }, {
+                "label": "Expatriates",
+                "value": "expatriates"
+            }, {
+                "label": "Expatriates Meta",
+                "value": "meta.expatriates"
+            }, {
+                "label": "Mathematics Educators",
+                "value": "matheducators"
+            }, {
+                "label": "Mathematics Educators Meta",
+                "value": "meta.matheducators"
+            }, {
+                "label": "Meta Stack Overflow",
+                "value": "meta.stackoverflow"
+            }, {
+                "label": "Earth Science",
+                "value": "earthscience"
+            }, {
+                "label": "Earth Science Meta",
+                "value": "meta.earthscience"
+            }, {
+                "label": "Joomla",
+                "value": "joomla"
+            }, {
+                "label": "Joomla Meta",
+                "value": "meta.joomla"
+            }, {
+                "label": "Data Science",
+                "value": "datascience"
+            }, {
+                "label": "Data Science Meta",
+                "value": "meta.datascience"
+            }, {
+                "label": "Puzzling",
+                "value": "puzzling"
+            }, {
+                "label": "Puzzling Meta",
+                "value": "meta.puzzling"
+            }, {
+                "label": "Craft CMS",
+                "value": "craftcms"
+            }, {
+                "label": "Craft CMS Meta",
+                "value": "meta.craftcms"
+            }, {
+                "label": "Buddhism",
+                "value": "buddhism"
+            }, {
+                "label": "Buddhism Meta",
+                "value": "meta.buddhism"
+            }, {
+                "label": "Hinduism",
+                "value": "hinduism"
+            }, {
+                "label": "Hinduism Meta",
+                "value": "meta.hinduism"
+            }, {
+                "label": "Community Building",
+                "value": "communitybuilding"
+            }, {
+                "label": "Community Building Meta",
+                "value": "metamunitybuilding"
+            }, {
+                "label": "Startups",
+                "value": "startups"
+            }, {
+                "label": "Startups Meta",
+                "value": "meta.startups"
+            }, {
+                "label": "Worldbuilding",
+                "value": "worldbuilding"
+            }, {
+                "label": "Worldbuilding Meta",
+                "value": "meta.worldbuilding"
+            }, {
+                "label": "スタック・オーバーフロー",
+                "value": "ja.stackoverflow"
+            }, {
+                "label": "スタック・オーバーフローMeta",
+                "value": "meta.ja.stackoverflow"
+            }, {
+                "label": "Emacs",
+                "value": "emacs"
+            }, {
+                "label": "Emacs Meta",
+                "value": "meta.emacs"
+            }, {
+                "label": "History of Science and Mathematics",
+                "value": "hsm"
+            }, {
+                "label": "History of Science and Mathematics Meta",
+                "value": "meta.hsm"
+            }, {
+                "label": "Economics",
+                "value": "economics"
+            }, {
+                "label": "Economics Meta",
+                "value": "meta.economics"
+            }, {
+                "label": "Lifehacks",
+                "value": "lifehacks"
+            }, {
+                "label": "Lifehacks Meta",
+                "value": "meta.lifehacks"
+            }, {
+                "label": "Engineering",
+                "value": "engineering"
+            }, {
+                "label": "Engineering Meta",
+                "value": "meta.engineering"
+            }, {
+                "label": "Coffee",
+                "value": "coffee"
+            }, {
+                "label": "Coffee Meta",
+                "value": "meta.coffee"
+            }, {
+                "label": "Vi and Vim",
+                "value": "vi"
+            }, {
+                "label": "Vi and Vim Meta",
+                "value": "meta.vi"
+            }, {
+                "label": "Music Fans",
+                "value": "musicfans"
+            }, {
+                "label": "Music Fans Meta",
+                "value": "meta.musicfans"
+            }, {
+                "label": "Woodworking",
+                "value": "woodworking"
+            }, {
+                "label": "Woodworking Meta",
+                "value": "meta.woodworking"
+            }, {
+                "label": "CiviCRM",
+                "value": "civicrm"
+            }, {
+                "label": "CiviCRM Meta",
+                "value": "meta.civicrm"
+            }, {
+                "label": "Health",
+                "value": "health"
+            }, {
+                "label": "Health Meta",
+                "value": "meta.health"
+            }, {
+                "label": "Stack Overflow на русском",
+                "value": "ru.stackoverflow"
+            }, {
+                "label": "Stack Overflow на русском Meta",
+                "value": "meta.ru.stackoverflow"
+            }, {
+                "label": "Русский язык",
+                "value": "rus"
+            }, {
+                "label": "Русский язык Meta",
+                "value": "meta.rus"
+            }, {
+                "label": "Mythology",
+                "value": "mythology"
+            }, {
+                "label": "Mythology Meta",
+                "value": "meta.mythology"
+            }, {
+                "label": "Law",
+                "value": "law"
+            }, {
+                "label": "Law Meta",
+                "value": "meta.law"
+            }];
+            var chosenSites = [];
+
+            if (typeof (Storage) !== "undefined") {
+                if (getFromLocalStorage("chosenSites")) { //get the already chosen sites
+                    chosenSites = JSON.parse(getFromLocalStorage("chosenSites"));
+                }
+            }
+
+            for (i = 0; i < chosenSites.length; i++) { //display the already chosen sites, with a delete button
+                $('#chosenSites ul').append("<li>" + chosenSites[i] + "&nbsp;<input id='" + i + "' type='button' value='delete'></li>");
+            }
+
+            $('#chosenSites').on('click', 'input[value="delete"]', function () { //to delete the sites you've chosen:
+                chosenSites = JSON.parse(getFromLocalStorage("chosenSites")); //get the chosen sites
+                chosenSites.splice($(this).attr('id'), 1); //delete the site from the array
+                $('#chosenSites ul').html(''); //remove everything from the div that shows the sites
+                saveToLocalStorage("chosenSites", JSON.stringify(chosenSites)); //save the new sites
+                for (i = 0; i < chosenSites.length; i++) { //for each site now, list them again (with new IDs for deletion next time)
+                    $('#chosenSites ul').append("<li>" + chosenSites[i] + "&nbsp;<input id='" + i + "' type='button' value='delete'></li>");
+                }
+            });
+
+            $("#sites").autocomplete({ //autocomplete for sites
+                source: sitesToChooseFrom,
+                select: function (event, ui) {
+                    id = prompt("Please enter your user ID on this site:");
+                    if (chosenSites.join().indexOf([ui.item.value, id]) == -1) { //make sure it's not going to be a dupe
+                        $('#chosenSites ul').append("<li>" + ui.item.value + "</li>");
+                        chosenSites.push([ui.item.value, id]);
+                    } else { //if it is, display an error message for 2 seconds
+                        $('#chosenSites').append("<span class='error'>You have already chosen " + ui.item.label + "!</span>");
+                        setTimeout(function () {
+                            $('#chosenSites .error').remove();
+                        }, 2000);
+                    }
+                    saveToLocalStorage("chosenSites", JSON.stringify(chosenSites)); //save the chosen sites (after being updated by user)
+                }
+            });
+        </script>
+        <br>
+        <div class="footer" style="float:left;">
+            <span class="site-footer-owner"><a href="https://github.com/shu8/SE-Closed-Questions-Notifier">SE Closed Questions Notifier</a> is maintained by <a href="https://github.com/shu8">ᔕᖺᘎᕊ</a>.</span>
+            <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>. (CSS has been slightly modified/added to by ᔕᖺᘎᕊ.)</span>
+        </div>
+        <br>
+    </section>
+</body>
+
+</html>
